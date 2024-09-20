@@ -1,0 +1,227 @@
+# Column name standardization dictionary. 
+   # To add new canonical column names, add them to the end and follow them with a colon.
+   # To add new alternate column names, put them under the cannonical name with a dash in front.
+   # Column names don't need to be in double quotes unless they have special characters in them.
+site: # site
+- "site"
+- "Site"
+year: # year; not given in most data farmes
+- "year"
+- "Year"
+collection_date: # collection date
+- "coll date"
+- "CollDate"
+- "Coll Date"
+- "coll_date"
+recorder: # Initials of recorder or dissector
+- "diss by"
+- "Dissector"
+- "diss"
+- "Coll'r"
+- "Diss'r"
+- "Diss. by"
+- "Diss by"
+- "recorder"
+tree: # numbered sequentially based on the numbers on your bag of shoots (tree=ramet=shoot in the context of these surveys because we collected a single shoot from each ramet)
+- "tree"
+- "Tree"
+- "tree (#)"
+leaf_position: # include all leaf positions on each shoot
+- "leaf pos"
+- "LfPos"
+- "Pos"
+- "pos"
+- "pos (#)"
+leaf_missing: # If the entire leaf is missing="1", otherwise="0" (If leaf is missing, mark the remaining leaf traits as ".")
+- "leaf missing"
+- "leaf_miss"
+- "leaf_miss (Y/N)"
+- "leaf_miss (0/1)"
+leaf_width: # leaf width in mm at widest place. If part of leaf is missing but you can measure the width on one side of the midvein, then measure and double this.
+- "lf wd (mm)"
+- "lf_wd_mm"
+- "lf_wd_mm (#)"
+efn_n: # number of extrafloral nectaries at leaf base
+- "EFNs"
+- "EFNs (#)"
+mine_top_perc: # visual estimate of percent mining on the leaf top; if part of leaf is missing, estimate the percent mining on the remaining tissue
+- "% min top"
+- "%MinT"
+- "%MinTop"
+- "%min top"
+- "minetop"
+- "mine_top (#)"
+- "mine_top"
+mine_bttm_perc: # visual estimate of percent mining on the leaf bottom if part of leaf is missing, estimate the percent mining on the remaining tissue
+- "% min bot"
+- "%MinB"
+- "%MinBot"
+- "%min bot"
+- "minebot"
+- "mine_bttm (#)"
+- "mine_bttm"
+mine_init_top_n: # number of mines initiated on top
+- "init_top (#)"
+- "init_top"
+mine_init_bttm_n: # number of mines initiated on bottom
+- "init_bttm (#)"
+- "init_bttm"
+leaf_missing_perc: # percent of leaf missing (not scored for leaves that are completely missing)
+- "% miss"
+- "%Miss"
+- "%_miss"
+- "%_miss (#)"
+leaf_roll_n: # number of leaf rolls
+- "leaf rolls"
+- "#LfRolls"
+- "#leaf rolls"
+- "NLfRolls"
+- "# lf rolls"
+- "lf_rolls"
+- "lf_rolls (#)"
+gall_n: # number of galls
+- "galls"
+- "#Galls"
+- "# galls"
+- "Ngalls"
+- "galls (#)"
+- "gall"
+leaf_side: # side of leaf (top / bottom)
+- "top/ bttm"
+- "T/B"
+- "T/B (T/B)"
+- "TB"
+individual: # individuals number 1, 2, 3, … for top and bottom separately
+- "ind"
+- "Ind"
+- "ind (#)"
+pupa_mine_site: # Is this a larva that is at the pupation site but had not yet completed a pupal fold? y/n
+- "m_pup_site"
+- "m_pup_site (Y/N)"
+larva_mine_alive: # Is the larva still alive? 0/1
+- "m_larv_alv"
+- "m_larv_alv (0/1)"
+larva_mine_dead: # Is the larva dead but not parasitized? 0/1
+- "m_larv_dead"
+- "m_larv_dead (0/1)"
+possess_intra_comp: # If the larva is dead of an unknown cause, could it be the result of intraspecific competition? 0/1 E.g., If its mine never intersects with another mine it could not be intraspecific competition.
+- "poss_intracomp (Y/N)"
+- "poss_intracomp"
+larva_mine_paras: # Is the larva parasitized? 0/1
+- "m_larv_para"
+- "m_larv_para (0/1)"
+mine_empty: # Is the mine open and empty? 0/1
+- "m_open/ empty"
+- "m_open/ empty (0/1)"
+larva_stage: # What stage was the larva?
+- "larv_stage (E/L)"
+- "larv_stage"
+larva_fold_alive: # Is the larva still alive? 0/1
+- "f_larv_alv"
+- "f_larv_alv (0/1)"
+larva_fold_dead: # Is the larva dead but not parasitized? 0/1
+- "f_larv_dead"
+- "f_larv_dead (0/1)"
+larva_fold_paras: # Is the larva parasitized? 0/1
+- "f_larv_para"
+- "f_larv_para (0/1)"
+pupa_fold_alive: # Is the pupa alive? 0/1
+- "f_pup_alv"
+- "f_pup_alv (0/1)"
+pupa_fold_dead: # Is the pupa dead? 0/1
+- "f_pup_dead"
+- "f_pup_dead (0/1)"
+pupa_fold_paras: # Is the pupa parasitized? 0/1
+- "f_pup_para"
+- "f_pup_para (0/1)"
+pupa_sex: # What is the sex? (M/F)
+- "ALM sex"
+- "pup_sex (F/M)"
+- "pup_sex"
+pupa_fold_eclose: # Has the pupa eclosed? 0/1
+- "f_pup_eclos"
+- "f_pup_eclos (0/1)"
+fold_empty: # Is the fold empty?
+- "f_open/ empty"
+- "f_open/ empty (0/1)"
+alm_pupa_id: # ID for saved ALM pupae. These are numbered sequentially for each individual data collector and an "A" is placed before the number to distinguish these from the parasitoid collections (e.g, pd-A01, pd-A02, etc.)
+- "PUPID"
+- "alm_pup_id"
+paras_egg_n: # If parasitized, how many parasitoid eggs are present?
+- "para_egg (#)"
+- "para_egg"
+paras_larva_alive_n: # If parasitized, how many living parasitoid larvae are present?
+- "para_larv_alive (#)"
+- "para_larv_alive"
+paras_larva_dead_n: # If parasitized, how many dead parasitoid larvae are present?
+- "para_larv_dead (#)"
+- "para_larv_dead"
+paras_pupa_n: # If parasitized, how many parasitoid pupae are present?
+- "para_pup (#)"
+- "para_pup"
+- "para_p"
+paras_eclose_n: # If parasitized, is the exoskeleton of an eclosed parasitoid present?
+- "para_eclos (#)"
+- "para_eclos"
+exo_endo: # Is it an endo- or exo-parasitoid? (endo=N, exo=X) If both types are present, explain this in the notes column (i.e., egg-X, living larva-N).
+- "endo/exo"
+- "exo/endo (X/N)"
+- "exo/endo"
+paras_id: # ID for saved parasitoid pupae. These will be numbered sequentially for each individual data collector (e.g., 18-pd01, 18-pd02, …., 18-dw01, 18-dw02, …)
+- "para_id"
+- "paras_id"
+paras_stage: # The stage of all parasitoids saved for rearing. L: larva prior to pre-pupa stage; R: pre-pupa; P: pupa
+- "ParaE/L/P"
+- "e/l/p (para)"
+- "ParaStage"
+- "para stg"
+- "para_stg"
+- "para_stg (E/L/P)"
+- "stage_coll_para (L, R, P)"
+notes: # Notes
+- "notes"
+- "Notes"
+blotch_mines_n: # ?? Number of mine blotches?
+- "# bltch"
+- "blotch_mines"
+- "blotch_mines (#)"
+total_inds_n: # ?? Total number of ALM eggs/larvae/dead/pupae detected?
+- "Total"
+- "total inds"
+paras_total_n: # ?? Total number of parasites
+- "total_para"
+- "total_para (#)"
+paras_color: # ?? Parasite Color
+- "ParaColor"
+- "color (para)"
+- "para color"
+- "para_color"
+puncture: # ?? Is this scars?
+- "puncture"
+leaf_width_cm: # Convert this to mm
+- "leaf wd (cm)"
+- "LfWd(cm)"
+- "LfWid(cm)"
+- "lf wd (cm)"
+necr_perc: # ??Percent necrosis?
+- "% necr"
+- "%Necr"
+alm_mass: # ?? Mass of leaf miners?
+- "ALM_MASS"
+larva_size: # ?? Larval size; unknown details
+- "LarvSize"
+- "larval size"
+drop1: # These next few rows only appear in one dataset, and can probably be skipped
+- "sht_LH"
+drop2: # These next few rows only appear in one dataset, and can probably be skipped
+- "uni_id"
+drop3: # These next few rows only appear in one dataset, and can probably be skipped
+- "Tall_Short (T/S)"
+drop4: # These next few rows only appear in one dataset, and can probably be skipped
+- "Tree_ht(m)"
+drop5: # These next few rows only appear in one dataset, and can probably be skipped
+- "Low_fol_ht(m)"
+drop6: # These next few rows only appear in one dataset, and can probably be skipped
+- "Sample_ht(m)"
+pupal_mass: # 
+- "pupal_mass"

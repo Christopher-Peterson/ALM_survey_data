@@ -1,0 +1,72 @@
+---
+output: github_document
+editor_options: 
+  chunk_output_type: console
+---
+
+# Errors detected in Data Parsing
+
+```{r setup, echo = FALSE}
+suppressPackageStartupMessages({
+  library(jsonlite)
+  library(readr)
+  library(purrr)
+  library(tidyr)
+  library(knitr)
+  library(dplyr)
+  library(glue)
+  library(stringr)
+})
+
+late_files = dir('error_logs/late', pattern = "20[0-9][0-9].json", full.names = TRUE)
+early_files = character(0) # add when implemented
+
+LATE_ERRORS =  length(late_files) > 0
+EARLY_ERRORS =  length(early_files) > 0
+NO_ERRORS = !(LATE_ERRORS || EARLY_ERRORS)
+
+error_msg = if_else(NO_ERRORS, 'No Errors Detected.', 'Errors or issues were detected while parsing input files.')
+```
+
+
+```{r json_functions, include = FALSE, echo = FALSE}
+parse_json_logs = \(file_list) {
+  # browser()
+  raw_in = file_list |> map(jsonlite::read_json, simplifyVector = TRUE)
+  excel_files = map_chr(raw_in, 'in_file') |> basename()
+  # Structure the logs so that the hierarchy is (sheet: then message and data, which )
+  error_logs = map(raw_in, 'logs') |> set_names(excel_files) |> imap_dfr(\(x, fl) tibble(file = fl, !!!transpose(x)) |> unchop(message)) 
+  error_logs
+}
+fmt_title = \(x, n) {
+  hash = rep('#', n) |> paste(collapse = '')
+  paste0('\n\n', paste(hash, x), '\n\n')
+}
+print_json_logs = \(parsed_log, start_level = 2) {
+  
+  chopped_log = parsed_log |> 
+    # Format titles
+    mutate(file = fmt_title(file, start_level), message = fmt_title(message, start_level + 2L)) |> 
+    group_by(file) |> 
+    nest()  
+  chopped_log |> pwalk(\(file, data) {
+    # browser()
+    cat(file); 
+    data |> pwalk(\(message, data) {
+      cat(message)
+      knitr::kable(data) |> print()
+    })
+  })
+}
+```
+
+
+```{r late_errors, echo = FALSE, results = 'asis'}
+cat(error_msg)
+cat('\n\n')
+
+if(LATE_ERRORS){
+  cat('# Late Period Errors\n')
+  late_files |> parse_json_logs() |>  print_json_logs()
+}
+```
