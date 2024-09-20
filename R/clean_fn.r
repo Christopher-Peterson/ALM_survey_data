@@ -317,10 +317,10 @@ resolve_leaf_mismatches = \(parsed_data) {
     select(-repeats, -ends_with('_range'), -multi_leaf) 
 
     check_small_repeats = new_validation('leaf_mismatch_small', 
-                 'Leaves with minor conflicting data; these will be averaged for now.',
+                 'Leaves with minor data conflicts among rows; these will be averaged for now.',
                  .return_fn = \(x) x |> group_leaf() |> df_unique_columns() )
     check_large_repeats = new_validation('leaf_mismatch_large', 
-                 'Leaves with large conflicting data; these will be dropped for now.',
+                 'Leaves with major data conflicts among rows; these will be dropped for now.',
                  .return_fn = \(x) x |> group_leaf() |> df_unique_columns() )
   check_small_repeats(small_leaf_repeats)
   check_large_repeats(large_leaf_repeats)
@@ -380,9 +380,8 @@ standardize_col_order = \(df, column_order = column_order_late) {
   df |> relocate(all_of(column_order))
 }
 #' Read the data in from an excel file; standardize the column names
-read_late_data = \(file, colname_yaml = 'column_names.yaml') {
+read_late_data = \(file, colname_key) {
   # browser()
-  colname_key = yaml::read_yaml(colname_yaml)
   year = basename(file) |> word(1)
   
   raw_data = read_excel(file, 1, col_type = 'text', na = c('.', '?', '')) 
@@ -586,13 +585,14 @@ write_canonical_forms_late = \(canonical_data_list) {
 }
 
 # Parse, Clean, Validate, and Canonicalize one data sheet; write output files ####
-clean_late_datasheet = \(in_file) {
+clean_late_datasheet = \(in_file, colname_yaml = 'column_names.yaml') {
   
   error_log = make_logger()
+  colname_key = yaml::read_yaml(colname_yaml)
   
   canonical_data = with_error_logs({
     parsed_data = in_file |> 
-      read_late_data() |> parse_late_data()  |> 
+      read_late_data(colname_key) |> parse_late_data()  |> 
       resolve_leaf_mismatches()
   
     validate_one_collection_date(parsed_data)
@@ -604,10 +604,20 @@ clean_late_datasheet = \(in_file) {
   log_file = glue("{log_dir_late}/parsing_{word(basename(in_file), 1)}.json")
   
   if(length(log_conditions) > 0) {
+    raw_colnames = read_excel(in_file, n_max = 0) |> names()
+    colname_key_tbl = imap_dfr(colname_key, \(raw_column, column) tibble(column, raw_column)) |> 
+      filter(raw_column %in% raw_colnames) |> 
+      mutate(column = if_else(column == 'leaf_width_cm', 'leaf_width', column))
+    
     # Now do something w/ the error logs, add year and in_file, format them, and print...
     log_subtypes = log_conditions |> map_chr('subtype')
-    log_data = list(in_file = in_file, 
-                    logs = log_conditions |> map(\(x) x[c('message', 'data')]) |> set_names(log_subtypes))
+    log_data = list(in_file = in_file,  logs = log_conditions |> map(\(x){
+                      out = x[c('message', 'data')]
+                      if('column' %in% names(out$data)){ 
+                        out$data = left_join(out$data, colname_key_tbl, by = 'column') |> 
+                          relocate(rows, raw_column, column, everything())
+                        } 
+                      out}) |> set_names(log_subtypes))
     jsonlite::write_json(log_data, log_file)
   } else {
     file.remove(log_file) |> suppressWarnings()
