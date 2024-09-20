@@ -8,7 +8,7 @@ In-progress repository to automatically clean ALM survey data and diagnose error
 
 ## Current Status
 
-[Error Status](blob/main/errors.md)
+[Error Status](errors.md)
 
 
 

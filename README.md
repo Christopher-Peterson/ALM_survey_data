@@ -6,7 +6,7 @@ diagnose errors.
 
 ## Current Status
 
-[Error Status](blob/main/errors.md)
+[Error Status](errors.md)
 
 <!-- Possible workflow: -->
 <!--   Read in new data -->
