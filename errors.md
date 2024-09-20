@@ -7,13 +7,13 @@ Errors or issues were detected while parsing input files.
 
 ## 2006 Leaf Survey MASTER RAW.xlsx
 
-#### Multiple binary columns in one row
+### Multiple binary columns in one row
 
 |  row | total | site | tree | leaf_position | leaf_side | individual |
 |-----:|------:|:-----|-----:|--------------:|:----------|-----------:|
 | 1013 |     2 | BNZ  |   25 |             5 | T         |          2 |
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -138,7 +138,7 @@ Errors or issues were detected while parsing input files.
 | 2397:2406 | mine_bttm_perc    | 45,82  | 2006 | WR   |   26 |             5 |
 | 2397:2406 | leaf_missing_perc | 0,2    | 2006 | WR   |   26 |             5 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id             | leaf_side |
 |:----------|:------------|:--------------------|:----------|
@@ -148,13 +148,13 @@ Errors or issues were detected while parsing input files.
 
 ## 2007 Leaf Survey MASTER RAW.xlsx
 
-#### Invalid site name
+### Invalid site name
 
 | row |
 |----:|
 | 223 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id           | leaf_side |
 |:----------|:------------|:------------------|:----------|
@@ -162,7 +162,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2008 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -185,7 +185,7 @@ Errors or issues were detected while parsing input files.
 | 1862:1865 | mine_bttm_perc    | 47,54  | 2008 | RP   |   27 |             5 |
 | 1862:1865 | leaf_missing_perc | 0,10   | 2008 | RP   |   27 |             5 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id           | leaf_side |
 |:----------|:------------|:------------------|:----------|
@@ -194,14 +194,14 @@ Errors or issues were detected while parsing input files.
 
 ## 2009 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows  | column | values | year | site | tree | leaf_position |
 |:------|:-------|:-------|-----:|:-----|-----:|--------------:|
 | 61:63 | gall_n | 0,1    | 2009 | BNZ  |    3 |             2 |
 | 83:84 | gall_n | NA,0   | 2009 | BNZ  |    4 |             2 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals                 | leaf_id            | leaf_side |
 |:----------|:----------------------------|:-------------------|:----------|
@@ -216,7 +216,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2010 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -249,7 +249,7 @@ Errors or issues were detected while parsing input files.
 | 1300:1314 | leaf_missing_perc | 3,5    | 2010 | WR   |    3 |             4 |
 | 1300:1314 | leaf_roll_n       | 0,2    | 2010 | WR   |    3 |             4 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id            | leaf_side |
 |:----------|:------------|:-------------------|:----------|
@@ -270,7 +270,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2011 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column          | values                | year | site | tree | leaf_position |
 |:----------|:----------------|:----------------------|-----:|:-----|-----:|--------------:|
@@ -287,7 +287,7 @@ Errors or issues were detected while parsing input files.
 | 2228:2229 | collection_date | 2011-06-19,2011-06-18 | 2011 | WR   |   22 |             7 |
 | 2251:2252 | collection_date | 2011-06-19,2011-06-18 | 2011 | WR   |   24 |             7 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id            | leaf_side |
 |:----------|:------------|:-------------------|:----------|
@@ -301,7 +301,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2012 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column         | values | year | site | tree | leaf_position |
 |:----------|:---------------|:-------|-----:|:-----|-----:|--------------:|
@@ -318,7 +318,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2013 Leaf Survey MASTER RAW.xlsx
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows    | individuals | leaf_id           | leaf_side |
 |:--------|:------------|:------------------|:----------|
@@ -326,13 +326,13 @@ Errors or issues were detected while parsing input files.
 
 ## 2014 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows    | column | values | year | site | tree | leaf_position |
 |:--------|:-------|:-------|-----:|:-----|-----:|--------------:|
 | 255:258 | gall_n | 0,1    | 2014 | BNZ  |   16 |             9 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id           | leaf_side |
 |:----------|:------------|:------------------|:----------|
@@ -341,7 +341,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2015 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column     | values | year | site | tree | leaf_position |
 |:----------|:-----------|:-------|-----:|:-----|-----:|--------------:|
@@ -349,7 +349,7 @@ Errors or issues were detected while parsing input files.
 | 626:628   | gall_n     | 1,0    | 2015 | ED   |    3 |             4 |
 | 1447:1448 | leaf_width | 39,41  | 2015 | WR   |   22 |             1 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id            | leaf_side |
 |:----------|:------------|:-------------------|:----------|
@@ -361,7 +361,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2016 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with minor conflicting data; these will be averaged for now.
+### Leaves with minor conflicting data; these will be averaged for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -371,7 +371,7 @@ Errors or issues were detected while parsing input files.
 | 2062:2065 | gall_n            | 1,0    | 2016 | WR   |   21 |             6 |
 | 2165:2168 | leaf_roll_n       | 1,0    | 2016 | WR   |   28 |             9 |
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column           | values | year | site | tree | leaf_position |
 |:----------|:-----------------|:-------|-----:|:-----|-----:|--------------:|
@@ -380,7 +380,7 @@ Errors or issues were detected while parsing input files.
 | 1681:1685 | mine_bttm_perc   | 5,3    | 2016 | RP   |   23 |            11 |
 | 1681:1685 | mine_init_bttm_n | 1,2    | 2016 | RP   |   23 |            11 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id            | leaf_side |
 |:----------|:------------|:-------------------|:----------|
@@ -395,20 +395,20 @@ Errors or issues were detected while parsing input files.
 
 ## 2017 Leaf Survey MASTER RAW.xlsx
 
-#### Leaves with minor conflicting data; these will be averaged for now.
+### Leaves with minor conflicting data; these will be averaged for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
 | 252:254   | leaf_missing_perc | 0,1    | 2017 | BNZ  |   10 |             7 |
 | 1120:1121 | leaf_missing_perc | 2,1    | 2017 | ED   |   24 |             3 |
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column         | values | year | site | tree | leaf_position |
 |:----------|:---------------|:-------|-----:|:-----|-----:|--------------:|
 | 1405:1406 | mine_bttm_perc | 30,35  | 2017 | RP   |   21 |             3 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id           | leaf_side |
 |:----------|:------------|:------------------|:----------|
@@ -417,7 +417,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2018 Leaf survey MASTER SHORT RAW.xlsx
 
-#### Leaves with minor conflicting data; these will be averaged for now.
+### Leaves with minor conflicting data; these will be averaged for now.
 
 | rows      | column          | values                | year | site | tree | leaf_position |
 |:----------|:----------------|:----------------------|-----:|:-----|-----:|--------------:|
@@ -427,7 +427,7 @@ Errors or issues were detected while parsing input files.
 | 1981:1983 | collection_date | 2018-06-28,2018-06-29 | 2018 | WR   |   13 |             7 |
 | 2015:2017 | collection_date | 2018-06-28,2018-06-29 | 2018 | WR   |   15 |             7 |
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -438,7 +438,7 @@ Errors or issues were detected while parsing input files.
 | 16:17     | leaf_missing_perc | 0,2    | 2018 | BNZ  |    1 |             8 |
 | 1590:1593 | leaf_width        | 44,4   | 2018 | RP   |   32 |             4 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id          | leaf_side |
 |:----------|:------------|:-----------------|:----------|
@@ -461,7 +461,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2019 Leaf survey MASTER SHORT RAW.xlsx
 
-#### Leaves with minor conflicting data; these will be averaged for now.
+### Leaves with minor conflicting data; these will be averaged for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -469,7 +469,7 @@ Errors or issues were detected while parsing input files.
 | 2065:2066 | leaf_roll_n       | 2,0    | 2019 | RP   |   29 |             7 |
 | 2692:2693 | leaf_missing_perc | 0,1    | 2019 | WR   |   23 |             6 |
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows    | column            | values | year | site | tree | leaf_position |
 |:--------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -478,7 +478,7 @@ Errors or issues were detected while parsing input files.
 | 930:939 | mine_bttm_perc    | 15,80  | 2019 | BNZ  |   23 |             3 |
 | 930:939 | leaf_missing_perc | 40,0   | 2019 | BNZ  |   23 |             3 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows    | individuals   | leaf_id            | leaf_side |
 |:--------|:--------------|:-------------------|:----------|
@@ -486,14 +486,14 @@ Errors or issues were detected while parsing input files.
 
 ## 2020 Leaf Survey Master RAW.xlsx
 
-#### Leaves with minor conflicting data; these will be averaged for now.
+### Leaves with minor conflicting data; these will be averaged for now.
 
 | rows    | column         | values | year | site | tree | leaf_position |
 |:--------|:---------------|:-------|-----:|:-----|-----:|--------------:|
 | 21:24   | mine_bttm_perc | 1,2    | 2020 | BNZ  |    1 |            11 |
 | 149:152 | leaf_roll_n    | 0,1    | 2020 | BNZ  |    5 |             7 |
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column            | values | year | site | tree | leaf_position |
 |:----------|:------------------|:-------|-----:|:-----|-----:|--------------:|
@@ -509,7 +509,7 @@ Errors or issues were detected while parsing input files.
 | 1591:1593 | mine_bttm_perc    | 3,5    | 2020 | RP   |    9 |             6 |
 | 1591:1593 | mine_init_top_n   | 1,0    | 2020 | RP   |    9 |             6 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id           | leaf_side |
 |:----------|:------------|:------------------|:----------|
@@ -520,7 +520,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2021 Leaf survey MASTER RAW.xlsx
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals | leaf_id            | leaf_side |
 |:----------|:------------|:-------------------|:----------|
@@ -536,7 +536,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2022 Leaf survey Master RAW.xlsx
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows      | individuals   | leaf_id            | leaf_side |
 |:----------|:--------------|:-------------------|:----------|
@@ -548,7 +548,7 @@ Errors or issues were detected while parsing input files.
 
 ## 2023 Leaf survey master RAW.xlsx
 
-#### Leaves with large conflicting data; these will be dropped for now.
+### Leaves with large conflicting data; these will be dropped for now.
 
 | rows      | column          | values | year | site | tree | leaf_position |
 |:----------|:----------------|:-------|-----:|:-----|-----:|--------------:|
@@ -557,7 +557,7 @@ Errors or issues were detected while parsing input files.
 | 1871:1872 | mine_top_perc   | 5,0    | 2023 | ED   |    3 |             5 |
 | 1871:1872 | mine_init_top_n | 1,0    | 2023 | ED   |    3 |             5 |
 
-#### Individuals are not unique within a leaf surface
+### Individuals are not unique within a leaf surface
 
 | rows    | individuals                        | leaf_id            | leaf_side |
 |:--------|:-----------------------------------|:-------------------|:----------|

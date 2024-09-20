@@ -46,7 +46,7 @@ print_json_logs = \(parsed_log, start_level = 2) {
   
   chopped_log = parsed_log |> 
     # Format titles
-    mutate(file = fmt_title(file, start_level), message = fmt_title(message, start_level + 2L)) |> 
+    mutate(file = fmt_title(file, start_level), message = fmt_title(message, start_level + 1L)) |> 
     group_by(file) |> 
     nest()  
   chopped_log |> pwalk(\(file, data) {
