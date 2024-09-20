@@ -4,8 +4,10 @@
 In-progress repository to automatically clean ALM survey data and
 diagnose errors.
 
-<!-- ## Current Status -->
-<!-- [Errors]() -->
+## Current Status
+
+[Error Status](blob/main/errors.md)
+
 <!-- Possible workflow: -->
 <!--   Read in new data -->
 <!--   Check to make sure that all of the columns are detectable by the metadata?   -->

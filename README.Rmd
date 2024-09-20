@@ -6,9 +6,9 @@ output: github_document
 
 In-progress repository to automatically clean ALM survey data and diagnose errors.
 
-<!-- ## Current Status -->
+## Current Status
 
-<!-- [Errors]() -->
+[Error Status](blob/main/errors.md)
 
 
 
