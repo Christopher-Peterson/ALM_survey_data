@@ -28,7 +28,7 @@ new_validation = \(.id, .title, .transform_fn = identity, .check_fn = \(x) nrow(
 validate_numeric_col_parsing = new_validation(
   'numeric_column_parsing', 'Error validating numeric column parsing',
   \(parsed_data) list(data = parsed_data, valid_numeric = parsed_data |> 
-                        select(any_of(column_types$quantitative)) |> map_lgl(is.numeric)),
+                        select(any_of(COLUMN_TYPES$quantitative)) |> map_lgl(is.numeric)),
   \(x) !all(x$valid_numeric),
   \(res) res$data |> select(all_of(names(res$valid_numeric)[!res$valid_numeric])) |> slice(0)
 )
@@ -95,7 +95,7 @@ validate_single_binary_col = new_validation(
     filter(total > 1), # Based on a positive quant_total
   .return_fn = \(bad_vals) {
     default_cols = c('site', 'tree', 'leaf_position', 'leaf_side', 'individual')
-    bad_vals |> select(row, total,  any_of(column_types$binary) & where(\(x) any(x > 1, na.rm = TRUE) ),
+    bad_vals |> select(row, total,  any_of(COLUMN_TYPES$binary) & where(\(x) any(x > 1, na.rm = TRUE) ),
                        any_of(default_cols))
     
   }

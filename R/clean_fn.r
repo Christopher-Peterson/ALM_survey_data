@@ -13,27 +13,44 @@ standardize_col_order = \(df, column_order = COLUMN_ORDER_LATE) {
   df |> relocate(all_of(column_order))
 }
 #' Read the data in from an excel file; standardize the column names
-read_late_data = \(file, colname_key) {
+
+
+#' Read in the raw excel file, fixing the collection date formatting
+#' @param file input excel file
+#' @param date_names names of date columns
+read_excel_raw = \(file, date_names) {
   # browser()
-  year = basename(file) |> word(1)
+  raw_names = read_excel(file, 1, n_max= 0) |> names()
+  date_col = which(raw_names %in% date_names)
+  col_types = rep('text', length(raw_names))
+  col_types[date_col] = 'date'
+  read_excel(file, 1, range = cell_cols(c(1, length(col_types))), # Cut off unnamed columns
+             col_type = col_types, na = c('.', '?', ''))
+}
+
+read_late_data = \(file, colname_key, year = basename(file) |> word(1)) {
   
-  raw_data = read_excel(file, 1, col_type = 'text', na = c('.', '?', '')) 
+  # year = basename(file) |> word(1)
+  
+  #raw_data = read_excel(file, 1, col_type = 'text', na = c('.', '?', '')) 
+  raw_data = read_excel_raw(file, colname_key$collection_date)
   # Check for unknown names
+  
   validate_unknown_names(raw_data, colname_key)
   
   renamed_data = raw_data |> select(!!!map(colname_key, any_of))
   
   # The date column will be formatted in excel's internal format; this fixes that
-  date_col = which(names(raw_data) %in% colname_key$collection_date)
+  # date_col = which(names(raw_data) %in% colname_key$collection_date)
   # date_col = which(names(renamed_data) == 'collection_date') # which(raw_names %in% date_columns)
   # browser()
-  date_fixed = read_excel(file, 1, range = cell_cols(date_col), 
-                          col_types = 'date')
+  # date_fixed = read_excel(file, 1, range = cell_cols(date_col), 
+  #                         col_types = 'date')
   # Re-insert it into the  df
   data_combined = renamed_data |> 
     mutate(year = as.integer(year)) |> relocate(year, everything()) |> 
     # Fix collection date
-    mutate(collection_date = date_fixed[[1]]) |> 
+    # mutate(collection_date = date_fixed[[1]]) |> 
     select(-starts_with('drop'), 
            -any_of('Year'),# Some had Year as an extra
            -starts_with('...') # Removes unnamed extra columns
@@ -210,24 +227,109 @@ make_canonical_forms_late = \(cleaned_data) {
   }
 }
 
-write_canonical_forms_late = \(canonical_data_list) {
+#' Output the canonical data to the disk...
+write_canonical_data = \(canonical_data_list, period = c('late', 'early'), base_dir = CANONICAL_DIR) {
+  period = match.arg(period)
   year = canonical_data_list$leaf$year[1]
-  output_files = imap(CANONICAL_DIR$late, 
-                      \(x, nm) file.path(x, glue("{nm}_{year}.csv")))
-  iwalk(canonical_data_list, \(df, nm) write_csv(df, output_files[[nm]], na = ''))
+  iwalk(canonical_data_list, \(df, type) {
+    file = file.path(base_dir[[period]], glue("{type}_{year}.csv"))
+    df |> write_csv(file, na = '')
+  })
 }
 
 # Parse, Clean, Validate, and Canonicalize one data sheet; write output files ####
-#' @param in_file input excel file
-#' @param test_only if TRUE, canonical csv files are not written
-#' @param colname_yaml yaml file with column names
-clean_late_datasheet = \(in_file, test_only = FALSE, colname_yaml = 'column_names.yaml') {
-  
-  colname_key = yaml::read_yaml(colname_yaml)
+
+# Maybe I should take this file and split it into core functionality and variable functions?
+# So that it works w/ shiny and non-shiny versions...
+# Yes.
+
+
+# Internal version, used by both shiny and github versions
+#' @param data_file name of input excel file
+#' @param year The year the data are from
+#' @param colname_key named list with alternate column names
+clean_late_datasheet_internal = \(data_file, year, colname_key) {
   
   error_log = make_logger()
   canonical_data = with_error_logs({
-    parsed_data = in_file |> 
+    parsed_data = data_file |> 
+      read_late_data(colname_key, year) |> parse_late_data()  |> 
+      resolve_leaf_mismatches()
+    
+    validate_one_collection_date(parsed_data)
+    # identify_multi_binary(parsed_data)
+    parsed_data |> make_canonical_forms_late() 
+  }, logger = error_log)
+  
+  # I need to figure out how to handle writing this...
+  error_report = error_log$report(data_file, colname_key)
+  list(data = canonical_data, report = error_report)
+}
+
+
+
+#' @param in_file name of input excel file
+#' @param test_only if TRUE, canonical csv files are not written
+#' @param colname_yaml yaml file of the colname list list
+clean_late_datasheet_github = \(in_file, test_only = FALSE, colname_yaml = 'column_names.yaml') {
+  colname_key = yaml::read_yaml(colname_yaml)
+  year = basename(in_file) |> word(1)
+  
+  output = clean_late_datasheet_internal(in_file, year, colname_key)
+  log_direc = if_else(isTRUE(test_only, LOG_DIR$late_test, LOG_DIR$late))
+  
+  # I need to figure out how to handle writing this...
+  output$write(in_file, log_direc)
+  # Write output files...
+  if(isFALSE(test_only)) output$data |> write_canonical_data('late')
+  invisible()
+}
+
+# Temporary function
+format_error_log = \(...) {
+"## Paragraph 1
+  Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fusce lacinia sollicitudin felis, nec porttitor nunc malesuada in. Suspendisse potenti. Curabitur eget gravida dui, non tempor leo. Ut ac ultrices diam. Mauris quis dapibus lectus. Etiam sit amet faucibus diam. Donec facilisis dolor in turpis mollis posuere. Ut rhoncus nulla et rutrum volutpat. Pellentesque in neque id libero tristique fermentum. Phasellus vestibulum sed mauris et ultricies. Integer feugiat bibendum quam sit amet cursus.
+## Paragraph 2
+Donec vestibulum quis lacus sit amet ullamcorper. Phasellus dapibus magna eget risus tempus, vitae sagittis ipsum tempor. Nullam lorem odio, viverra a tellus eget, scelerisque faucibus eros. Vestibulum eu sodales lorem. In lobortis, urna at porttitor commodo, enim sem efficitur nulla, nec convallis risus libero et orci. Maecenas quis enim volutpat, rutrum lacus vel, venenatis metus. Nulla vitae mattis massa. Vivamus eu turpis pellentesque, lacinia eros mollis, vestibulum quam. In libero velit, maximus et ligula eu, tempus sagittis diam. Nam a nisl vitae orci faucibus mollis. Curabitur a tristique magna. Sed interdum dapibus lorem, id vestibulum urna faucibus et. Maecenas sit amet tellus vel massa convallis dapibus vel sit amet risus. Mauris quis tincidunt massa, sed tempus arcu. Nulla aliquam nisi in turpis accumsan dapibus. Nulla vel libero accumsan, consequat massa sit amet, porttitor elit.
+### Paragraph 3
+Aliquam vitae vehicula orci. Nam pretium massa tellus, vel egestas magna imperdiet quis. Aliquam efficitur tempor ornare. Mauris ornare nisi eu sapien pretium malesuada. Vivamus mattis luctus auctor. Morbi ac mattis tellus, ut suscipit sem. Vivamus quis facilisis eros.
+### Paragraph 4
+Etiam vel sem ultrices, gravida eros ut, ultricies nisl. Integer urna odio, placerat eu fermentum ut, dapibus ut enim. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Curabitur a elit in nisl congue efficitur a ut neque. Vivamus venenatis, magna ac mattis egestas, dolor ligula sollicitudin nisl, quis tincidunt tellus diam id urna. Donec non tortor dolor. Integer quis leo in est ultricies maximus vitae vitae odio. Aenean consequat quis diam a ornare. Fusce nec tellus blandit, ultrices nibh a, suscipit nulla. Fusce viverra luctus mi, at porttitor dolor dictum quis. Phasellus viverra purus magna, id euismod diam imperdiet volutpat. Vivamus ornare at augue et varius.
+## Paragraph 5
+Aliquam dapibus nulla eros, a auctor nisl aliquet ac. Sed nec diam varius, sollicitudin metus non, condimentum augue. Etiam nec mattis nulla. Pellentesque ultrices sagittis lorem et sagittis. Sed mollis diam quis velit viverra pharetra. Ut a aliquet neque. Phasellus molestie nulla nec leo auctor, sit amet rutrum leo lacinia. Mauris vitae hendrerit odio. "
+}
+
+#' @param name name of input excel file
+#' @param datapath actual location of the excel file
+#' @param colname_key named list of colname aliases
+#' @param ... ignored
+clean_late_datasheet_shiny = \(name, datapath,  colname_key, ...) {
+  name = basename(name)
+  year = name |> word(1)
+  output = clean_late_datasheet_internal(datapath, year, colname_key)
+  output$report$in_file = name # Correct this, as it was previously datapath
+  
+  # output$report = format_error_log(output$report, name)
+  output
+}
+
+
+
+#' @param in_file name of input excel file
+#' @param test_only if TRUE, canonical csv files are not written
+#' @param colname_key named list with alternate column names, OR yaml file of the list
+#' @param datapath actual file name, if different from in_file; used for shiny version
+clean_late_datasheet_old = \(in_file, test_only = FALSE, colname_key = 'column_names.yaml',
+                         datapath = in_file) {
+  if(length(colname_key) == 1 && is.character(colname_key) && str_sub(colname_key, -4L) == 'yaml'){
+    colname_key = yaml::read_yaml(colname_yaml)
+  }
+  
+    
+  error_log = make_logger()
+  year = basename(in_file) |> word(1)
+  canonical_data = with_error_logs({
+    parsed_data = data_file |> 
       read_late_data(colname_key) |> parse_late_data()  |> 
       resolve_leaf_mismatches()
   
@@ -236,6 +338,8 @@ clean_late_datasheet = \(in_file, test_only = FALSE, colname_yaml = 'column_name
     parsed_data |> make_canonical_forms_late() 
   }, logger = error_log)
   log_direc = if_else(isTRUE(test_only, LOG_DIR$late_test, LOG_DIR$late))
+  
+  # I need to figure out how to handle writing this...
   error_log$write(in_file, colname_key, log_direc)
   
   # Write output files...
@@ -252,11 +356,20 @@ make_all_year = \(in_dir) {
   read_csv(in_files) |> write_csv(paste0(in_dir, '_allyears.csv'))
 }
 #' Combine and export the leaf and surface data
-combine_leaf_surface = \(leaf_file, surface_file) {
-  leaf_in = read_csv(leaf_file)
-  surface_in = read_csv(surface_file)
-  left_join(leaf_in, surface_in, by = 'leaf_id')
-  write_csv(COMBINED_DIR$late$leaf_surface, na = '')
+combine_leaf_surface = \(leaf_df, surface_df) {
+  left_join(leaf_df, surface_df, by = 'leaf_id')
+}
+combine_leaf_surface_files = \(period = c('late', 'early')) {
+  period = match.arg(period)
+  direc = CANONICAL_DIR[[period]]
+  leaf_files = dir(direc, 'leaf_') |> sort()
+  surface_files = dir(direc, 'surface_') |> sort()
+  
+  leaf_df = read_csv(leaf_files)
+  surface_df = read_csv(surface_files)
+  
+  combine_leaf_surface(leaf_df, surface_df) |> 
+  write_csv(file.path(COMBINED_DIR[[period]],  'leaf_surface.csv'), na = '')
 }
 
 # Parse and display error logs

@@ -75,3 +75,9 @@ reverse_column_table = \(colname_key, in_file) {
     mutate(column = if_else(column == 'leaf_width_cm', 'leaf_width', column))
   
 }
+
+## Markdown Helpers ####
+fmt_title_md = \(x, n) {
+  hash = rep('#', n) |> paste(collapse = '')
+  paste0('\n\n', paste(hash, x), '\n\n')
+}
