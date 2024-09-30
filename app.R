@@ -1,14 +1,14 @@
 # Load required libraries
-library(shiny)
-library(rlang)
-# library(shinythemes)
-library(readxl)
-library(purrr)
-library(gt)
-library(dplyr)
-library(tidyr)
-library(stringr)
-library(archive)
+# library(shiny)
+# library(rlang)
+# # library(shinythemes)
+# library(readxl)
+# library(purrr)
+# library(gt)
+# library(dplyr)
+# library(tidyr)
+# library(stringr)
+# library(archive)
 # 
 # Define UI ####
 ui <- fluidPage(
@@ -38,7 +38,7 @@ ui <- fluidPage(
         tabPanelBody('panelNull', h2('Upload Excel files with raw ALM data to begin'),  
                      p('You can select multiple files to upload at once by using shift or control.')),
         tabPanelBody('panelErrors', 
-                      style = "height: 90vh; overflow-y: auto;",  # This should (in theory) enable a scrollbar
+                     style = "height: 90vh; overflow-y: auto;",  # This should (in theory) enable a scrollbar
                      h2("Errors or issues detected with the uploaded data."),
                      p("Please correct these errors and and re-upload."),
                      # Add a link to download...
@@ -140,7 +140,7 @@ server <- function(input, output, session) {
           pmap(\(message, data) data |> gt(groupname_col = 'rows', row_group_as_column = TRUE, caption = message) |>
                  tab_stubhead('Rows')) 
         # browser()
-        tibble(file = fl, html = map_chr(gt_list, as_raw_html) |> paste(collapse = ' <br> '))
+        tibble(file = fl, html = map_chr(gt_list, as_raw_html, inline_css = FALSE) |> paste(collapse = ' <br> '))
       })
     
     html_output = gt_table |>
