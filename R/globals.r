@@ -1,34 +1,43 @@
 # Globals
-if(identical(rlang::caller_fn(10), shiny::runApp)) {
-  # Triggers if this has been called by shiny::runApp()
-  RUNNING_SHINY = TRUE
-}
+
+suppressPackageStartupMessages({
+  library(readxl)
+  library(purrr)
+  library(dplyr)
+  library(rlang)
+  library(archive)
+  library(glue)
+  library(withr)
+  library(yaml)
+  library(lubridate)
+  library(readr)
+  library(tidyr)
+  library(stringr)
+  library(gt)
+})
+
+# if(identical(rlang::caller_fn(10), shiny::runApp)) {
+#   # Triggers if this has been called by shiny::runApp()
+#   RUNNING_SHINY = TRUE
+# } 
 
 ## Set Directories ####
-if(!RUNNING_SHINY){
+# if(!RUNNING_SHINY){
   # Create a self-named subset of directories
   #' @x subdirectory name
   #' @param direc parent directory
   named_subdirs = \(x, direc) {
     paths = file.path(direc,x) |> set_names(x)
-    walk(paths, dir.create, recursive = TRUE, showWarnings = FALSE)
+    try(walk(paths, dir.create, recursive = TRUE, showWarnings = FALSE))
     paths
   }
   
   LOG_DIR = c('late', 'early') |> named_subdirs('error_logs')
   CANONICAL_DIR = c('late', 'early') |> named_subdirs('canonical_data')
   COMBINED_DIR = c('late', 'early') |> named_subdirs('combined_data')
-} else {
-  library(readxl)
-  library(purrr)
-  library(dplyr)
-  library(rlang)
-  library(lubridate)
-  library(readr)
-  library(tidyr)
-  library(stringr)
-  
-}
+# } else {
+
+# }
 
 ## Define some column types ####
 COLUMN_TYPES = tibble::lst(
