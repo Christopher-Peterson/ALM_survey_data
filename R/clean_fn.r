@@ -96,8 +96,8 @@ parse_late_data = \(data_combined) {
     # Fix the date issues
     mutate(collection_date = collection_date |> 
              # Convert to a date
-             # ymd() |>
-             set_year(year)) |> 
+             ymd() |>
+             set_year(year)) |>
     mutate(leaf_side = toupper(leaf_side))
   # if(TEMPORARY_FIXES) {
   #   out = out |> mutate(
