@@ -22,7 +22,8 @@ group_leaf_cols = \(x, ..., .anyof=character(0)) { x |>
     group_leaf(.anyof = c(COLUMN_GROUPS_LATE$leaf_data, .anyof), ...)  }
 quant_total = \(df) { df |> 
     mutate(total = across(any_of(COLUMN_TYPES$binary)) |> rowSums(na.rm = TRUE)) }
-set_year = \(x, yr) {   year(x) = yr;   x }
+set_year = \(x, yr) {   
+  year(x) = as.integer(yr);   x } 
 
 drop_null_cols = \(dat) {
   null_columns = map_lgl(dat, \(x) all(is.na(x))) |> which()

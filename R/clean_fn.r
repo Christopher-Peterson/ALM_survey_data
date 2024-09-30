@@ -90,20 +90,22 @@ parse_late_data = \(data_combined) {
         data_parsed$leaf_width, leaf_width_cm * 10)) |> 
       select(-leaf_width_cm)
   }
-  
+  # browser()
+  # if(as.character(data_parsed$year[1]) == '2007') browser()c
   out = data_parsed |> 
     # Fix the date issues
     mutate(collection_date = collection_date |> 
              # Convert to a date
-             ymd() |> set_year(year)) |> 
+             # ymd() |>
+             set_year(year)) |> 
     mutate(leaf_side = toupper(leaf_side))
-  if(TEMPORARY_FIXES) {
-    out = out |> mutate(
-      # One observation is missing a date; the subsequent row was collected at the same time.
-      collection_date = collection_date |> coalesce(lead(collection_date)),
-      # Fix a missing value in 2007:
-      site = if_else(is.na(site) & year == 2007, 'BNZ', site))
-    }
+  # if(TEMPORARY_FIXES) {
+  #   out = out |> mutate(
+  #     # One observation is missing a date; the subsequent row was collected at the same time.
+  #     collection_date = collection_date |> coalesce(lead(collection_date)),
+  #     # Fix a missing value in 2007:
+  #     site = if_else(is.na(site) & year == 2007, 'BNZ', site))
+  #   }
   out
 }
 
