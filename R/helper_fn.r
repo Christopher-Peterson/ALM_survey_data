@@ -83,3 +83,17 @@ fmt_title_md = \(x, n) {
   hash = rep('#', n) |> paste(collapse = '')
   paste0('\n\n', paste(hash, x), '\n\n')
 }
+
+
+#' Sort by deparsed rows()
+sort_rows = \(df) {
+  # df must have rows column
+  if(!'rows' %in% names(df)) {
+    if('row' %in% names(df)){
+      return(df |> arrange(row))
+    } else return(df)
+  }
+  df |> mutate(first_row = parse(text = rows) |> 
+                 map_int(\(x) eval(x) |> min())) |> 
+    arrange(first_row) |> select(-first_row)
+}

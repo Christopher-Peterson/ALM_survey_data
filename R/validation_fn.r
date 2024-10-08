@@ -47,9 +47,11 @@ validate_leaf_sides = new_validation(
     
     leaf_smry = parsed_data |> group_by(year, site, tree, leaf_position) |>
       filter(individual == min(individual) | is.na(individual)) |>  
+      arrange(row) |> 
       summarize(n_side = n(), top = 'T' %in% leaf_side, 
                 bttm = 'B' %in% leaf_side, na = any(is.na(leaf_side)),
-                rows = deparse(row));
+                rows = deparse(row), first_row = min(row)) |> 
+      arrange(first_row) |> select(-first_row);
     both_na_and_tb = leaf_smry |> filter(na, top | bttm)  ; # TRUE if there's an NA and T or B for oen
     one_side_and_tb = leaf_smry |> filter(n_side == 1, !na, (top + bttm) != 1)   # True if there's both 
     bind_rows(both_na_and_tb, one_side_and_tb)
@@ -66,6 +68,7 @@ validate_na_parsing = new_validation(
     xor_mask = (n_p | n_u) & (!(n_p & n_u))
     default_cols = c('year', 'row', 'site', 'tree', 'leaf_position', 'leaf_side', 'individual')
     bad_parses = unparsed_data |>
+      arrange(row) |> 
       # mutate(row = 1:n() + 1) |> 
       filter(rowSums(xor_mask) > 0) |> 
       select(any_of(default_cols), all_of(which(colSums(xor_mask) > 0))) ## |> 
@@ -95,7 +98,8 @@ validate_single_binary_col = new_validation(
     filter(total > 1), # Based on a positive quant_total
   .return_fn = \(bad_vals) {
     default_cols = c('site', 'tree', 'leaf_position', 'leaf_side', 'individual')
-    bad_vals |> select(row, total,  any_of(COLUMN_TYPES$binary) & where(\(x) any(x > 1, na.rm = TRUE) ),
+    bad_vals |> arrange(row) |> 
+      select(row, total,  any_of(COLUMN_TYPES$binary) & where(\(x) any(x > 1, na.rm = TRUE) ),
                        any_of(default_cols))
     
   }
@@ -104,13 +108,15 @@ validate_single_binary_col = new_validation(
 #' @param parsed_data parsed data
 validate_one_collection_date = new_validation(
   'multiple_collection_dates',  "Multiple collection dates per leaf",
-  \(parsed_data) parsed_data |>  group_leaf() |>
+  \(parsed_data) parsed_data |> 
+    group_leaf() |>
     summarize(n_collect = n_distinct(collection_date)) |> 
-    ungroup() |> filter(n_collect > 1) )
+    ungroup() |> filter(n_collect > 1)  ) 
 
 validate_sites = new_validation(
   'valid_sites', 'Invalid site name',
   \(parsed_data) parsed_data |> select(row, site) |> 
+    arrange(row) |> 
     filter(!toupper(site) %in% c('BNZ', 'RP', "WR", "ED"))
 )
 
@@ -120,7 +126,8 @@ validate_sites = new_validation(
 resolve_leaf_mismatches = \(parsed_data) {
   # browser()
   leaf_data = parsed_data |>  select_leaf_cols(row) |> 
-    group_leaf() |>  mutate(rows = deparse(row)) |> 
+    group_leaf() |> arrange(row) |> 
+    mutate(rows = deparse(row)) |> 
     select(-row) |> ungroup() |>  distinct()
   drange = \(x) diff(range(x, na.rm = TRUE) |> suppressWarnings() |> na_inf())
   leaf_repeats = leaf_data |> group_leaf(rows) |> 
@@ -131,10 +138,12 @@ resolve_leaf_mismatches = \(parsed_data) {
               top_init_range = drange(mine_init_top_n),
               bttm_init_range = drange(mine_init_bttm_n),
               date_range = drange(collection_date)
-    ) |> ungroup() |>  filter(repeats > 1) |> 
+    ) |> ungroup() |>  
+    filter(repeats > 1) |> 
     left_join(leaf_data) |>  group_leaf() |> 
     mutate(multi_leaf = n_distinct(leaf_width) > 1 | n_distinct(efn_n) > 1) |> 
-    ungroup() 
+    ungroup() |> 
+    sort_rows()
   # small difference repeats are only different in mining/missing percentages, 
   # and those differences are within 2%; they get averaged
   small_leaf_repeats = leaf_repeats |> 
@@ -175,13 +184,13 @@ resolve_leaf_mismatches = \(parsed_data) {
       # remove the bad leaf duplicates
       anti_join(large_leaf_repeats |> select_leaf() |> distinct())
     # These numbers should add up:
-    check_dropping_large_repeats = new_validation('leaf_mismatch_drop_check',
-                                                  'Mismatch detected when dropping leaves w/ large mismatches',
-                                                  \(nonbad_data) list(expected = nrow(parsed_data) - 
-                                                                        nrow(large_leaf_repeats |> select_leaf() |> 
-                                                                               distinct() |> left_join(parsed_data)),
-                                                                      observed = nrow(nonbad_data)),
-                                                  \(x)  x$observed != x$expected)
+    check_dropping_large_repeats = new_validation(
+      'leaf_mismatch_drop_check', 'Mismatch detected when dropping leaves w/ large mismatches',
+      \(nonbad_data) list(expected = nrow(parsed_data) -  
+                            nrow(large_leaf_repeats |>
+                                  select_leaf() |>  distinct() |> left_join(parsed_data)),
+                          observed = nrow(nonbad_data)),
+              \(x)  x$observed != x$expected)
     check_dropping_large_repeats(nonbad_data)
     parsed_data = nonbad_data
   }
@@ -191,10 +200,16 @@ resolve_leaf_mismatches = \(parsed_data) {
 # During Canonicalization ####
 validate_individual_numbers = new_validation(
   'unique_individual_numbers', "Individuals are not unique within a leaf surface",
-  \(surface_data_binary) {     surface_data_binary |> 
+  \(surface_data_binary) {
+    # browser()
+    surface_data_binary |> 
+      arrange(row) |> #, leaf_id, desc(leaf_side)) |> 
       group_by(leaf_id, leaf_side) |> 
-      summarize(rows = deparse(row), n_rows = n(), n_individuals = n_distinct(individual),
-                individuals = paste(individual, collapse = ','), .groups = 'drop')  |> 
+      summarize(rows = deparse(row), first_row = min(row), n_rows = n(),
+                n_individuals = n_distinct(individual),
+                individuals = paste(individual, collapse = ','),
+                .groups = 'drop')  |> 
+      arrange(first_row) |> 
       filter(n_rows != n_individuals) |> 
       select(rows, individuals, leaf_id, leaf_side)
   })
