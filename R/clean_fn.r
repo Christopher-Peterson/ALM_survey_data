@@ -127,7 +127,7 @@ canonical_leaf_late = \(keyed_data) {
   #   left_join(leaf_rows, by = 'leaf_id')
   # # Why are the earlier duplication checks not catching this??
   # if(nrow(leaf_dups) > 0) {
-  #   browser()
+  #   
   #   leaf_dup_table = leaf_dups |> group_leaf() |> df_unique_columns()
   #   # Fail with, but also report other duplicates
   #   if(TEMPORARY_FIXES) { # Enabled only so I can ignore issues and keep developing
@@ -135,7 +135,7 @@ canonical_leaf_late = \(keyed_data) {
   #     leaf_canonical = leaf_canonical |>  anti_join(leaf_dup_table |> select(leaf_id), by = 'leaf_id')
   #   } else {
   #     # Error report
-  #     browser()
+  #     
   #     stop("Add error handling here")
   #   }
   # }
@@ -176,6 +176,10 @@ canonical_surface_counts = \(leaf_canonical, surface_data_binary) {
     mutate(across(any_of(paste0(COLUMN_TYPES$binary, '_n')), 
                   \(x) replace_na(x, 0))) |> 
     relocate(surface_id)
+  
+  
+  # validate_individual_numbers(surface_canonical)
+  
   # Validations: 
   if(nrow(surface_scaffold) != nrow(surface_canonical)) {
     log_error('canonical_surface_error', "Error while joining the canonical surface data",
@@ -198,10 +202,42 @@ make_canonical_forms_late = \(cleaned_data) {
   # notes_data = keyed_data |> filter(!is.na(notes)) |> select() # I should do something to save the notes...
   surface_data_binary = prep_surface_binary(keyed_data)
   surface_canonical = canonical_surface_counts(leaf_canonical, surface_data_binary)
+  # browser()
+  # Run more validations
+  keyed_rows = surface_data_binary |> group_by(leaf_id, surface_id) |> 
+    summarize(rows = deparse(row) |> str_remove('L'), .groups = 'drop')
+  
+  joint_canonical_with_total = leaf_canonical |> select_leaf() |> ungroup() |> left_join(
+    surface_canonical |> mutate(total = across(ends_with('_n')) |> rowSums()), ## |> slice(257),
+    by = 'leaf_id' ) |> left_join(keyed_rows) |>  
+    mutate(inits = case_when(
+      leaf_side == 'T' ~ mine_init_top_n,
+      leaf_side == 'B' ~ mine_init_bttm_n,
+      TRUE ~ 0)) |> 
+    mutate(mining_damage = case_when(
+      leaf_side == 'T' ~ mine_top_perc,
+      leaf_side == 'B' ~ mine_bttm_perc,
+      TRUE ~ NA_real_)) |> ungroup() 
+
+  validate_surface_counts_align(joint_canonical_with_total)
+  validate_miners_present_if_damage(joint_canonical_with_total)
+  validate_no_damage_fold(joint_canonical_with_total)
+  validate_no_damage_miner(joint_canonical_with_total)
+  
+  # browser()
   # if(TEMPORARY_FIXES) # FIGURE OUT WHAT TO DO
   # TEMPORARY EXIT: 
   return(list(leaf = leaf_canonical, surface = surface_canonical))
   {
+    
+    
+    
+  
+      
+      # There are SOME YEARS where there is a bad join... Figure out which of those it is!!!!
+      
+      
+      
   # # Convert state from a 1/0 matrix to a character vector
   # indiv_states = surface_data_binary |> ungroup() |> 
   #   mutate(state =  across(COLUMN_TYPES$binary) |>  
@@ -209,7 +245,10 @@ make_canonical_forms_late = \(cleaned_data) {
   #             reduce(coalesce)) |> 
   #   select(surface_id, state) |> 
   #   mutate(ind_row = 1:n())
-  # 
+  # cleaned_data |> group_leaf() |> quant_total() |> 
+  #     mutate(count_match = case_when(leaf_side == 'T' ~ mine_init_top_n != total,
+  #                                    leaf_side == 'T' ~ mine_init_top_n != total,
+  #     ))
   # # Next: Pupa and larva Data!
   # indiv_data = keyed_data |> filter(!is.na(leaf_side)) |> 
   #   select(surface_id, with_any_late(surface_data, pupa_para, larva )) |> 
@@ -257,8 +296,8 @@ clean_late_datasheet_internal = \(data_file, year, colname_key) {
     parsed_data = data_file |> 
       read_late_data(colname_key, year) |> parse_late_data()  |> 
       resolve_leaf_mismatches()
-    
     validate_one_collection_date(parsed_data)
+    # validate_surface_counts_align(parsed_data)
     # identify_multi_binary(parsed_data)
     parsed_data |> make_canonical_forms_late() 
   }, logger = error_log)

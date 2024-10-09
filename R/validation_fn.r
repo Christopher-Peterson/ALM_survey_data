@@ -9,7 +9,7 @@
 #' @param .id the name/subtype of the error log
 #' @param .title the message of the error log
 #' @param .transform_fn a function that transforms its inputs for validation checks;
-#' @param .check_fn checks the output of .transform_fn and returns a logical vector; if true, adds to the error log
+#' @param .check_fn checks the output of .transform_fn and returns a logical scalar; if true, adds to the error log
 #' @param .return_fn modifies results of .transform_fn for inclusion in error log
 #' @return a void function with the same arguments as .transform_fn()
 new_validation = \(.id, .title, .transform_fn = identity, .check_fn = \(x) nrow(x) > 0, .return_fn = identity) {
@@ -112,7 +112,7 @@ validate_one_collection_date = new_validation(
     group_leaf() |>
     summarize(n_collect = n_distinct(collection_date)) |> 
     ungroup() |> filter(n_collect > 1)  ) 
-
+#' Check to make sure all sites are valid
 validate_sites = new_validation(
   'valid_sites', 'Invalid site name',
   \(parsed_data) parsed_data |> select(row, site) |> 
@@ -120,8 +120,51 @@ validate_sites = new_validation(
     filter(!toupper(site) %in% c('BNZ', 'RP', "WR", "ED"))
 )
 
+## Check for inconsistencies after canonicalization ####
+#' Check that the counts on the top or bottom match the sum of individual counts
+#' @param canonical_with_total  joined leaf & surface column, with a 'total' column for total individuals
+validate_surface_counts_align = new_validation(
+  'surface_count_mismatch', 'Surface initiation count and total individual count are not equal',
+  \(canonical_with_total) {  canonical_with_total |>
+    filter(!is.na(inits), total != inits) |> sort_rows() |> 
+      select(rows, site, tree, leaf_position, leaf_side, initiations = inits, 
+             total_individuals = total, mining_damage,
+             all_of(COLUMN_GROUPS_LATE$surface_data_agg))
+  })
+#' Also checks for cases where mining damage is nonzero but miners are absent
+validate_miners_present_if_damage = new_validation(
+  'no_miners_but_damage', 'Leaf surface has mining damage, but no miners are recorded',
+  \(canonical_with_total) {  canonical_with_total |>
+      filter( coalesce(inits == 0, FALSE) | (total == 0), mining_damage > 0) |> sort_rows() |> 
+      select(rows, site, tree, leaf_position, leaf_side, mining_damage, initiations = inits, 
+             total_individuals = total) })
+#' Checks if any fold/pupa/eclosed individuals are observed who should have left mining damage
+validate_no_damage_fold = new_validation(
+  'undamaged_with_late_miners', 'Leaf surface has no mining damage despite ALM in leaf folds',
+  \(canonical_with_total) {  canonical_with_total |>
+      mutate(folds = across(contains('_fold_') & ends_with('_n')) |> rowSums() ) |> 
+      filter(folds > 0, mining_damage == 0) |> sort_rows() |> 
+      select(rows, site, tree, leaf_position, leaf_side, mining_damage,
+             contains('_fold_') & ends_with('_n') ) })
+#' Checks if any miners are present w/ no damage
+validate_no_damage_miner = new_validation(
+  'undamaged_with__miners', 'Leaf surface has no mining damage despite mining larave detected.  This is not necessarily an error, but has been flagged for review.',
+  \(canonical_with_total) {  canonical_with_total |>
+      mutate(miners = across(contains('mine_') & ends_with('_n')) |> rowSums() ) |> 
+      filter(miners > 0, mining_damage == 0) |> sort_rows() |> 
+      select(rows, site, tree, leaf_position, leaf_side, mining_damage,
+             contains('_fold_') & ends_with('_n')  ) })
+
 
 # Leaf mismatches (requires return value) ####
+
+# These two aren't returned directly
+validate_small_repeats = new_validation('leaf_mismatch_small', 
+                                        'Leaves with minor data conflicts among rows; these will be averaged for now.',
+                                        .return_fn = \(x) x |> group_leaf() |> df_unique_columns() )
+validate_large_repeats = new_validation('leaf_mismatch_large', 
+                                        'Leaves with major data conflicts among rows; these will be dropped for now.',
+                                        .return_fn = \(x) x |> group_leaf() |> df_unique_columns() )
 
 resolve_leaf_mismatches = \(parsed_data) {
   # browser()
@@ -154,15 +197,8 @@ resolve_leaf_mismatches = \(parsed_data) {
   large_leaf_repeats = leaf_repeats |> 
     anti_join(small_leaf_repeats |> select_leaf()) |> 
     select(-repeats, -ends_with('_range'), -multi_leaf) 
-  
-  check_small_repeats = new_validation('leaf_mismatch_small', 
-                                       'Leaves with minor data conflicts among rows; these will be averaged for now.',
-                                       .return_fn = \(x) x |> group_leaf() |> df_unique_columns() )
-  check_large_repeats = new_validation('leaf_mismatch_large', 
-                                       'Leaves with major data conflicts among rows; these will be dropped for now.',
-                                       .return_fn = \(x) x |> group_leaf() |> df_unique_columns() )
-  check_small_repeats(small_leaf_repeats)
-  check_large_repeats(large_leaf_repeats)
+  validate_small_repeats(small_leaf_repeats)
+  validate_large_repeats(large_leaf_repeats)
   if(TEMPORARY_FIXES) {
     # browser()
     

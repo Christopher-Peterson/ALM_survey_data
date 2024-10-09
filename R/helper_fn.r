@@ -97,3 +97,6 @@ sort_rows = \(df) {
                  map_int(\(x) eval(x) |> min())) |> 
     arrange(first_row) |> select(-first_row)
 }
+
+
+#' drop zeroes from a vector, and then deparse

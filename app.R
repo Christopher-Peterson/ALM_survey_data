@@ -43,7 +43,7 @@ ui <- fluidPage(
                      p("Please correct these errors and and re-upload."),
                      # Add a link to download...
                      "You can download a copy of this report ", 
-                     downloadLink('error_report_dl', 'here.'),
+                     downloadLink('error_report_dl', 'here'), ' once it has loaded below.',
                      htmlOutput('error_report')
                      # THIS IS WHERE YOU add in the actual errors.
                       # "Link to Open in New Window"
