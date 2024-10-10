@@ -1,8 +1,8 @@
 # Globals
 
 suppressPackageStartupMessages({
-  library(rspm)
-  rspm::enable()
+  # library(rspm)
+  # rspm::enable()
   library(readxl)
   library(purrr)
   library(dplyr)
