@@ -200,16 +200,23 @@ make_canonical_forms_late = \(cleaned_data) {
     keyed_data = keyed_data |> left_join(leaf_canonical |> select(leaf_id))
   }
   # notes_data = keyed_data |> filter(!is.na(notes)) |> select() # I should do something to save the notes...
-  surface_data_binary = prep_surface_binary(keyed_data)
+  surface_data_binary = prep_surface_binary(keyed_data)# Some rows are lost in this; not sure why or if its an issue
   surface_canonical = canonical_surface_counts(leaf_canonical, surface_data_binary)
-  # browser()
   # Run more validations
-  keyed_rows = surface_data_binary |> group_by(leaf_id, surface_id) |> 
-    summarize(rows = deparse(row) |> str_remove('L'), .groups = 'drop')
-  
+  # Assign row numbers
+  # Leaf surfaces that had no observations don't have rows in the data frame; 
+    # however, they can still be related to errors.  
+    # For data correction, we will assign them the row of the whole leaf
+  surface_rows = keyed_data |>  group_by(leaf_id, surface_id) |> 
+    summarize(rows_surf = deparse(row) |> str_remove('L'), .groups = 'drop')
+  leaf_rows = keyed_data |> group_by(leaf_id) |> 
+    summarize(rows_leaf = deparse(row) |> str_remove('L'), .groups = 'drop')
+  # Create a structure to validate leaf-level and surface-level connections
   joint_canonical_with_total = leaf_canonical |> select_leaf() |> ungroup() |> left_join(
     surface_canonical |> mutate(total = across(ends_with('_n')) |> rowSums()), ## |> slice(257),
-    by = 'leaf_id' ) |> left_join(keyed_rows) |>  
+    by = 'leaf_id' ) |> left_join(surface_rows) |>  
+    left_join(leaf_rows) |> 
+    mutate(rows = coalesce(rows_surf, rows_leaf)) |> select(-rows_surf, -rows_leaf) |> 
     mutate(inits = case_when(
       leaf_side == 'T' ~ mine_init_top_n,
       leaf_side == 'B' ~ mine_init_bttm_n,
@@ -218,13 +225,10 @@ make_canonical_forms_late = \(cleaned_data) {
       leaf_side == 'T' ~ mine_top_perc,
       leaf_side == 'B' ~ mine_bttm_perc,
       TRUE ~ NA_real_)) |> ungroup() 
-
   # validate_surface_counts_align(joint_canonical_with_total)
   validate_miners_present_if_damage(joint_canonical_with_total)
   validate_no_damage_fold(joint_canonical_with_total)
   validate_no_damage_miner(joint_canonical_with_total)
-  
-  # browser()
   # if(TEMPORARY_FIXES) # FIGURE OUT WHAT TO DO
   # TEMPORARY EXIT: 
   return(list(leaf = leaf_canonical, surface = surface_canonical))

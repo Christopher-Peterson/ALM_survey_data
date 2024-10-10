@@ -153,7 +153,7 @@ validate_no_damage_miner = new_validation(
       mutate(miners = across(contains('mine_') & ends_with('_n')) |> rowSums() ) |> 
       filter(miners > 0, mining_damage == 0) |> sort_rows() |> 
       select(rows, site, tree, leaf_position, leaf_side, mining_damage,
-             contains('_fold_') & ends_with('_n')  ) })
+             contains('_mine_') & ends_with('_n')  ) })
 
 
 # Leaf mismatches (requires return value) ####

@@ -13,7 +13,7 @@
 # Define UI ####
 ui <- fluidPage(
   # theme = shinytheme("flatly"),
-  
+  title = 'ALM Data Cleaning & Validation App',
   # App title
   titlePanel("Upload & Validate Raw ALM Data"),
   
