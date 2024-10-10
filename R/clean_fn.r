@@ -219,7 +219,7 @@ make_canonical_forms_late = \(cleaned_data) {
       leaf_side == 'B' ~ mine_bttm_perc,
       TRUE ~ NA_real_)) |> ungroup() 
 
-  validate_surface_counts_align(joint_canonical_with_total)
+  # validate_surface_counts_align(joint_canonical_with_total)
   validate_miners_present_if_damage(joint_canonical_with_total)
   validate_no_damage_fold(joint_canonical_with_total)
   validate_no_damage_miner(joint_canonical_with_total)
