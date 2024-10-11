@@ -150,7 +150,7 @@ validate_no_damage_fold = new_validation(
 validate_no_damage_miner = new_validation(
   'undamaged_with__miners', 'Leaf surface has no mining damage despite mining larave detected.  This is not necessarily an error, but has been flagged for review.',
   \(canonical_with_total) {  canonical_with_total |>
-      mutate(miners = across(contains('mine_') & ends_with('_n')) |> rowSums() ) |> 
+      mutate(miners = across(contains('_mine_') & ends_with('_n')) |> rowSums() ) |> 
       filter(miners > 0, mining_damage == 0) |> sort_rows() |> 
       select(rows, site, tree, leaf_position, leaf_side, mining_damage,
              contains('_mine_') & ends_with('_n')  ) })
